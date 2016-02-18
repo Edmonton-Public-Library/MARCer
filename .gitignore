@@ -1,0 +1,8 @@
+*.mrc
+build*
+*.mrk
+dist
+instruction.cmd
+manifest.mf
+nbproject
+test.txt

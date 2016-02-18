@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <title>MARCer Documentation</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <div>
+            <h3>MARCer</h3>
+            <p>MARCer is an application written in Java that processes 
+                <a href="https://www.loc.gov/marc/bibliographic/">MARC 21 files</a>.</p>
+            
+            <p>MARCer reads a list of simple commands that allows the user to 
+            modify and write MARC files.</p>
+            <h4>Commands and Syntax</h4>
+            <p>
+                The organization of the language follows the form of 'subject verb predicate'. 
+                For example printing out all the 008 tags from a MARC file is done with<br/>
+                <code>008 print</code><br/>
+                But, of course, this MARCer is much more powerful.
+            </p>
+            <ul>
+                <li><code>[tag] [append|pre-pend] [some string]</code> Eg: </li>
+                <li><code>[tag|'all'] print</code></li>
+                <li><code>[tag] if [position] == [value] then [instruction]</code></li>
+                <li><code>[tag] set [position] = [value]</code></li>
+                <li><code>set var [name] = [value]</code> See Built-in variables.</li>
+                <li><code>record[s] write [file] as [binary|text]</code> Outputs either each
+                record as a single file or all records as one MARC file.</li>
+            </ul>
+            <h4>Built-in variables</h4>
+            <p>
+                Current built-in variables are '<b>ignore_white_space</b>' and '<b>debug</b>'.
+            </p>
+            <p>ignore_white_space test the position of a character within a field, but 
+            will ignore whitespace. This means you are checking the position at starting
+            at 0 on the first non-white space character. Example: '  hello', with 
+            ignore_white_space = false, 035 0 == h then 035 print will produce nothing,
+            but ignore_white_space = true, 035 0 == h then 035 print will produce 'hello'.
+            This setting is used for all comparisons and when ever a position is changed.
+            It is generally not recommended.</p>
+            <p>
+                debug turns debugging information on during run time. There is a 
+                secondary debug setting available when invoking MARCer from the 
+                command line.
+            </p>
+            <h4>Command line arguments</h4>
+            <p>
+                MARCer can be invoked from the command line with the following options.
+            </p>
+            <ul>
+                <li><code>-d</code> Turn on debugging for general operations.</li>
+                <li><code>-f[marc_file.mrc]</code> MARC file to be processed.</li>
+                <li><code>-i[instruction_file.cmd]</code> File of modification instructions.</li>
+                <li><code>-v</code> Print version and exit.</li>
+            </ul>
+        </div>
+    </body>
+</html>
