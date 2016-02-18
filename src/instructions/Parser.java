@@ -116,7 +116,7 @@ public class Parser
                 instruction = new Variable(tokens);
                 break;
             case "write":
-                instruction = new WriteFileN(tokens);
+                instruction = new WriteFile(tokens);
                 break;
             case "pre-pend":
             case "append":
@@ -128,10 +128,13 @@ public class Parser
             case "delete":
                 instruction = new DeleteTag(tokens);
                 break;
+            case "touch":
+                instruction = new Touch(tokens);
+                break;
             default:
                 throw new UnsupportedOperationException(String.format("operation '%s' not supported.", verb));
         }
-        instruction.setDebug(debug);
+        Instruction.setDebug(debug);
         return instruction;
     }
     

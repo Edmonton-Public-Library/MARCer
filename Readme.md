@@ -54,8 +54,7 @@ set var debug = true
 The following variables are currently recognized.
 ```
 debug - boolean (true or false)
-marc_file - string, name of the input marc file with fully qualified path if not in the current working directory.
-verbose - boolean (true or fasle)
+output_modified_only - boolean (true or false), otherwise all records will be written to file if requested. See Writing files.
 ```
 
 
@@ -108,6 +107,7 @@ outputs all the records in a single text file, while
 record write test.mrc as binary
 ```
 writes a given record as a binary MARC 21 file.
+
 
 Modify tags
 ===========
@@ -179,6 +179,18 @@ This can be combined with a test.
 ```
 035 if 5 == S then 035 set 5 = p
 ```
+Touching a records
+------------------
+But what if you just want all the records that have 'eng' encoding, can you write a file of just those records, without making changes?
+Yes you can with the touch command.
+```
+syntax: record touch
+```
+Typically you would use it with and if statement.
+```
+008 if 23 == s then record touch
+```
+which will write all the records that contain 's' in the 23 position of the 008 record.
 
 TODO commands
 -------------------

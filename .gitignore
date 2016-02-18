@@ -6,3 +6,4 @@ instruction.cmd
 manifest.mf
 nbproject
 test.txt
+*.txt

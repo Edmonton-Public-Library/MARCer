@@ -17,14 +17,34 @@ public abstract class Instruction
     protected String verb;
     protected static boolean debug = false;
     protected static boolean ignoreIndicators = false;
+    protected static boolean writeChangedRecordsOnly = false;
     
     /**
      * Turns on debugging information.
      * @param debug turns on debugging.
      */
-    public static void setDebug(boolean debug)
+    static void setDebug(boolean debug)
     {
         Instruction.debug = debug;
+    }
+    
+    /**
+     * Sets the application to output only changed records, or records that test 
+     * successfully.
+     * @param b true to get just changed records and false otherwise.
+     */
+    static void setOutputOnChangeOnly(boolean b)
+    {
+        Instruction.writeChangedRecordsOnly = b;
+    }
+    
+    /** 
+     * Tests if the flag to output changed records only is on.
+     * @return true if user requests changes records only, and false otherwise.
+     */
+    public static boolean isOutputOnChangeOnly()
+    {
+        return writeChangedRecordsOnly;
     }
     
     /**

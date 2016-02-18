@@ -383,6 +383,10 @@ public class Record
         return this.getLanguageEncoding().compareTo(search) == 0;
     }
     
+    /**
+     * Tests if the record's 9th position contains the marker for Unicode encoding. 
+     * @return true if the 9th position is 'a' and false otherwise (MARC 8).
+     */
     public boolean isUTF8()
     {
         return this.leader.isUTF8Encoding();

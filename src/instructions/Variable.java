@@ -16,6 +16,7 @@
 package instructions;
 
 import MARC.Record;
+import instructions.Parser.SyntaxError;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,18 +28,25 @@ class Variable extends Instruction
 {
     protected HashMap<String, String> symbolTable;
     
-    public Variable(List<String> tokens) 
+    public Variable(List<String> tokens) throws SyntaxError 
     {
         this.symbolTable     = new HashMap<>();
         this.tag             = tokens.remove(0);
         this.verb            = tokens.remove(0);
         String variableName  = tokens.remove(0);
         String assignment    = tokens.remove(0);
+        if (assignment.compareTo("=") != 0)
+        {
+            throw new SyntaxError(String.format("** expected assignment char but got '%s'\n", assignment));
+        }
         String variableValue = tokens.remove(0);
         switch (variableName)
         {
             case "debug":
                 Instruction.setDebug(Boolean.parseBoolean(variableValue));
+                break;
+            case "output_modified_only":
+                Instruction.setOutputOnChangeOnly(Boolean.parseBoolean(variableValue));
                 break;
             default:
                 this.symbolTable.put(variableName, variableValue);

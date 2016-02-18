@@ -19,6 +19,12 @@ class MARCFile
     private final MARCSplitter marcSplitter;
     private boolean debug;
     
+    public MARCFile(String file, boolean debug, boolean outputModifiedOnly)
+    {
+        this.marcSplitter = new MARCSplitter(file, outputModifiedOnly);
+        this.debug        = debug;
+    }
+    
     public MARCFile(String file, boolean debug)
     {
         this.marcSplitter = new MARCSplitter(file);

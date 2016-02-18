@@ -15,10 +15,38 @@ import java.util.List;
  */
 public class MARCSplitter
 {
-    private List<Record> marcRecords;
+    private static List<Record> marcRecords;
+    private static boolean isOutputIfModifiedOnly;
+    
+    /**
+     * Create a record object that can tell if it has been modified.
+     * @param fileName name of the MARC file to read.
+     * @param modify sets if the object returned is a Record or DirtyRecord.
+     */
+    public MARCSplitter(String fileName, boolean modify)
+    {
+        marcRecords = new ArrayList<>();
+        isOutputIfModifiedOnly = modify;
+        init(fileName);
+    }
+    
+    /**
+     * Creates a standard set of MARC records based on the input file named.
+     * @param fileName name of the MARC file.
+     */
     public MARCSplitter(String fileName)
     {
-        this.marcRecords = new ArrayList<>();
+        marcRecords = new ArrayList<>();
+        isOutputIfModifiedOnly = false;
+        init(fileName);
+    }
+        
+    /**
+     * Standard setup for reading records.
+     * @param fileName name of MARC file.
+     */
+    private static void init(String fileName)
+    {
         File f = new File(fileName);
         if (! f.isFile() )
         {
@@ -37,7 +65,7 @@ public class MARCSplitter
             int damagedRecords = 0;
             while (true)
             {
-                Record record = this.readMARCRecord(in);
+                Record record = readMARCRecord(in);
                 if (record == null)
                 {
                     break;
@@ -48,7 +76,7 @@ public class MARCSplitter
                     System.out.println(String.format("%15s", record.getTag("035")));
                 }
                 recordCount++;
-                this.marcRecords.add(record);
+                marcRecords.add(record);
             }
             String fString = String.format("%10s %7d\n%10s %7d", 
                 "damaged:", damagedRecords, "total:", recordCount);
@@ -66,7 +94,7 @@ public class MARCSplitter
         }
     }
     
-    private Record readMARCRecord(DataInputStream stream) throws IOException   
+    private static Record readMARCRecord(DataInputStream stream) throws IOException   
     {
         byte[] leaderArray = new byte[Leader.LENGTH];
         // read All bytes of File stream
@@ -76,10 +104,22 @@ public class MARCSplitter
         // read in the leader (24 bytes) so exclude that.
         byte[] remainderOfRecord = new byte[leader.getRecordLength() -Leader.LENGTH];
         if (stream.read(remainderOfRecord, 0, remainderOfRecord.length) <= 0) return null;
-        Record record = new Record(leader, remainderOfRecord);
+        Record record;
+        if (isOutputIfModifiedOnly)
+        {
+            record = new DirtyRecord(leader, remainderOfRecord);
+        }
+        else
+        {
+            record = new Record(leader, remainderOfRecord);
+        }
         return record;    
     }
 
+    /**
+     * Gets the records from the MARC file.
+     * @return marc records in as Iterable.
+     */
     public Iterable<Record> getRecords() 
     {
         return this.marcRecords;

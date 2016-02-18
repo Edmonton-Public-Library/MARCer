@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Andrew.
+ * Copyright 2016 anisbet.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,50 +20,43 @@ import MARC.Record;
 import java.util.List;
 
 /**
- * Filter conditions on a record.
- * @author Andrew
+ * Allows user to touch a file for output if a test succeeds.
+ * @author Andrew Nisbet
  */
-public class Filter extends Instruction
+public class Touch extends Instruction
 {
     private Record record;
-    private String predicate;
-    public Filter(List<String> tokens) 
+    
+    public Touch(List<String> tokens) 
     {
         this.tag = tokens.remove(0);
         this.verb = tokens.remove(0);
-        this.predicate = tokens.remove(0);
-        String filterType = this.tag;
-        switch (filterType)
+        switch (this.tag)
         {
-            case "language":
+            case "record":
                 break;
             default:
                 throw new UnsupportedOperationException(
                         String.format("%s doesn't support %s not supported.", 
-                                this.verb, filterType));
+                                this.verb, this.tag));
         }
     }
 
     @Override
-    public void setRecord(Record record) 
+    public void setRecord(Record record)
     {
         this.record = record;
     }
 
     @Override
-    public boolean run() 
+    public boolean run()
     {
-        if (this.record.matchesLanguageIndicator(this.predicate))
+        if (Instruction.writeChangedRecordsOnly && this.record instanceof DirtyRecord)
         {
-            // there may be no changes to the record, but we want the record to
-            // be output if the user has selected so in the intructions.
-            if (Instruction.writeChangedRecordsOnly && this.record instanceof DirtyRecord)
-            {
-                ((DirtyRecord)this.record).touch();
-            }
+            // If no changes and doesn't match on say a filter selection skip it.
+            ((DirtyRecord)this.record).touch();
             return true;
         }
         return false;
     }
-    
 }

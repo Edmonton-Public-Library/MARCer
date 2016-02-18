@@ -22,7 +22,6 @@ package marcer;
 
 import instructions.Instruction;
 import instructions.Parser;
-import instructions.Parser.SyntaxError;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -75,16 +74,7 @@ public class MARCer
             {
                 DEBUG = true;
             }
-            if (cmd.hasOption("f"))
-            {
-                String marcFilePath = cmd.getOptionValue("f");
-                marcFile = new MARCFile(marcFilePath, DEBUG);
-            }
-            else
-            {
-                System.err.println("Please specify a marc file on the command line.");
-                System.exit(3);
-            }
+            // Handle the user instructions.
             if (cmd.hasOption("i"))
             {
                 // read the [i]nstructions from a file and create modification instructions line-by-line.
@@ -97,6 +87,25 @@ public class MARCer
                                     instructionFile));
                     System.exit(4);
                 }
+            }
+            // Now handle the marc file reading to ensure that variables in instructions
+            // are honoured during reading of the MARC file.
+            if (cmd.hasOption("f"))
+            {
+                String marcFilePath = cmd.getOptionValue("f");
+                if (Instruction.isOutputOnChangeOnly())
+                {
+                    marcFile = new MARCFile(marcFilePath, DEBUG, true);
+                }
+                else
+                {
+                    marcFile = new MARCFile(marcFilePath, DEBUG);
+                }
+            }
+            else
+            {
+                System.err.println("Please specify a marc file on the command line.");
+                System.exit(3);
             }
         } 
         catch (ParseException ex)

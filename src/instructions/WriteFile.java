@@ -15,6 +15,7 @@
  */
 package instructions;
 
+import MARC.DirtyRecord;
 import MARC.Record;
 import instructions.Parser.SyntaxError;
 import java.io.FileNotFoundException;
@@ -32,7 +33,7 @@ import java.util.logging.Logger;
  * 
  * @author Andrew
  */
-class WriteFileN extends Instruction 
+class WriteFile extends Instruction 
 {
 
     private static String fileName; // TODO add a sequence number to the file name to make it unique.
@@ -40,14 +41,14 @@ class WriteFileN extends Instruction
     private final List<Record> records;
     private boolean runNow;
 
-    public WriteFileN(List<String> tokens) throws SyntaxError 
+    public WriteFile(List<String> tokens) throws SyntaxError 
     {
         this.outputBinary   = true; // Default to output binary MARC file.
         this.runNow         = false;
         this.records        = new ArrayList<>();
         this.tag            = tokens.remove(0);
         this.verb           = tokens.remove(0);
-        WriteFileN.fileName = tokens.remove(0);
+        WriteFile.fileName  = tokens.remove(0);
         String assign       = tokens.remove(0);
         String format       = tokens.remove(0);
         switch (this.tag)
@@ -109,6 +110,16 @@ class WriteFileN extends Instruction
             out = new FileOutputStream(this.fileName);
             for (Record r: this.records)
             {
+                // there may be no changes to the record, but we want the record to
+                // be output if the user has selected so in the intructions.
+                if (Instruction.writeChangedRecordsOnly && r instanceof DirtyRecord)
+                {
+                    // If no changes and doesn't match on say a filter selection skip it.
+                    if (((DirtyRecord)r).isDirty() == false)
+                    {
+                        continue;
+                    }
+                }
                 r.write(out);
             }
             out.close();
@@ -116,13 +127,13 @@ class WriteFileN extends Instruction
         } 
         catch (FileNotFoundException ex) 
         {
-            Logger.getLogger(WriteFileN.class.getName()).log(Level.SEVERE, 
+            Logger.getLogger(WriteFile.class.getName()).log(Level.SEVERE, 
                     "** error file should have been created!" , ex);
             return false;
         } 
         catch (IOException ex) 
         {
-            Logger.getLogger(WriteFileN.class.getName()).log(Level.SEVERE, 
+            Logger.getLogger(WriteFile.class.getName()).log(Level.SEVERE, 
                     "** error writing file " + this.fileName, ex);
             return false;
         } 
@@ -134,7 +145,7 @@ class WriteFileN extends Instruction
             } 
             catch (IOException ex) 
             {
-                Logger.getLogger(WriteFileN.class.getName()).log(Level.SEVERE, 
+                Logger.getLogger(WriteFile.class.getName()).log(Level.SEVERE, 
                         "** error closing the file " + this.fileName, ex);
                 return false;
             }
@@ -152,6 +163,16 @@ class WriteFileN extends Instruction
         {
             for (Record r: this.records)
             {
+                // there may be no changes to the record, but we want the record to
+                // be output if the user has selected so in the intructions.
+                if (Instruction.writeChangedRecordsOnly && r instanceof DirtyRecord)
+                {
+                    // If no changes and doesn't match on say a filter selection skip it.
+                    if (((DirtyRecord)r).isDirty() == false)
+                    {
+                        continue;
+                    }
+                }
                 writer.println(r.toString());
             }
             writer.close();
@@ -161,13 +182,13 @@ class WriteFileN extends Instruction
         } 
         catch (FileNotFoundException ex)
         {
-            Logger.getLogger(WriteFileN.class.getName()).log(Level.SEVERE, 
+            Logger.getLogger(WriteFile.class.getName()).log(Level.SEVERE, 
                     "** error, file should have been created!", ex);
             return false;
         }
         catch (UnsupportedEncodingException ex) 
         {
-            Logger.getLogger(WriteFileN.class.getName()).log(Level.SEVERE, 
+            Logger.getLogger(WriteFile.class.getName()).log(Level.SEVERE, 
                     "** error, UTF-8 not supported.", ex);
             return false;
         }
