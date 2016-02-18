@@ -190,7 +190,8 @@ Typically you would use it with and if statement.
 ```
 008 if 23 == s then record touch
 ```
-which will write all the records that contain 's' in the 23 position of the 008 record.
+which will write all the records that contain 's' in the 23 position of the 008 record, ensuring that if there are no other changes and 
+output_modified_only is true, the record will be written to file.
 
 TODO commands
 -------------------
