@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * If then test of a field from a MARC record.
- * @author Andrew
+ * @author Andrew Nisbet
  */
 public class IfThen extends Instruction
 {
@@ -101,7 +101,7 @@ public class IfThen extends Instruction
             if (this.rightSide.charAt(0) == content.toString().charAt(this.leftSide))
             {
                 result = true;
-                break;
+                break; // At least one match found!
             }
         }
         if (result)

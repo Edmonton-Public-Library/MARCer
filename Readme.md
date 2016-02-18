@@ -6,12 +6,10 @@ Overview
 I hate the fact that MARC 21 doesn't have any tools that do what I want to do. Marcedit is good but basically
 a text editor and it has several problems. Perl has MARC::Batch and there is a little documentation to get 
 you going, but nothing for when the rubber hits the road. I need something that I can just specify what the 
-Cataloguers want and let'er go to it. 
-
-MARCer is that tool.
+Cataloguers want and let'er go to it. For me MARCer is that tool.
 
 The project started with a request from the LAT cataloguer Allison, who needed special handling of EBSCO A to Z 
-records. 'Sometimes we need to add tags, sometimes remove tags. Then we always have to adjust the URL to electonic
+records. 'Sometimes we need to add tags, sometimes remove tags. Then we always have to adjust the URL for electonic
 resources. Oh, by the way, there are 58,000 of them.' Sigh. 
 
 How can MARCer help
@@ -21,10 +19,16 @@ but they get job done, and they are extensible. Once the instructions are parsed
 read, then if conditions apply, editing commands are executed and a new MARC 21 file is produced complete with
 changes.
 
-The instructions are modelled on triples of the form <subject> <verb> <predicate>.
+The instructions are modelled on triples of the form.
+```
+<subject> <verb> <predicate>
+```
 
-Command set
------------
+The following are recognized commands
+=====================================
+
+Commenting
+----------
 
 Comments (always welcome)
 ```
@@ -36,6 +40,25 @@ Example:
 REM (or rem) another comment.
 ```
 
+Setting variables
+-----------------
+There are some built-in variables that can be set.
+```
+syntax: set var <name> = <value>
+```
+Example:
+```
+set var debug = true
+```
+
+The following variables are currently recognized.
+```
+debug - boolean (true or false)
+marc_file - string, name of the input marc file with fully qualified path if not in the current working directory.
+verbose - boolean (true or fasle)
+```
+
+
 Printing to screen
 ------------------
 
@@ -43,6 +66,15 @@ Print each record in the MARC file with the following.
 ```
 record print
 ```
+All the 003 tags can be output like so.
+```
+003 print
+```
+or 
+```
+leader print
+```
+
 
 Delete tags
 -----------
@@ -77,28 +109,90 @@ record write test.mrc as binary
 ```
 writes a given record as a binary MARC 21 file.
 
-REM records write test.txt as text
-REM record print
-REM 003 print
-REM leader print
-REM 003 append http://some.nonsense.com/index.php and other stuff.
-REM record print
-REM 003 pre-pend afore string of some sort.
-REM record print
-REM 035 add test record content [eyes only]
-REM record print
-REM 151104nuuuuuuuuxx |||| s|||||||||||eng|d will succeed if used as below.
-REM 008 if 23 == s then 008 print 
-REM 008 print
-REM 008   if 23 == s then 035 print
-REM 035 print
+Modify tags
+===========
 
-REM ###### Untested.
-REM set var debug = true
-REM set var ignore_white_space = false ############# Don't use.
+Append to a tag
+---------------
+The are just text, so a find and replace in Marcedit would do the job, but then you have to 
+compile the file back into MARC. Instead try the following.
+```
+<tag> append <text>
+```
+Example:
+```
+003 append http://some.nonsense.com/index.php
+```
+
+Pre-pend to a tag
+-----------------
+Sometimes you need to pre-pend information to a tag.
+```
+syntax: <tag> pre-pend <text>
+```
+Example
+```
+003 pre-pend afore string of some sort.
+```
+
+Add new tag
+-----------
+The following will add a new tag to the MARC record.
+```
+syntax: <tag> add <tag content>
+```
+Like so
+```
+035 add (OCLC) o2391456
+```
+The first non-white space character until the end of line character (EOL) is considered content for the tag.
+
+Testing tags
+------------
+The contents of tags can be tested modestly. For example the query 'is there an "s" in the 23 position of the 008 tag?'
+can be asked and more importantly answered. Consider the following 008 tag:
+```
+151104nuuuuuuuuxx |||| s|||||||||||eng|d 
+```
+Then test with
+```
+008 if 23 == s then 008 print
+```
+will succeed.
+
+Note that only single characters can be tested like this, as this is no requirement for this functionality beyond that 
+at this time, however it would be a relatively simple matter to extend.
+
+Positional testing and setting
+------------------------------
+
+Changing a value at a specific position can be done with the set keyword.
+```
+syntax: <tag> set <position 0-based> = <character>
+```
+Example:
+```
+035 set 5 = p
+```
+
+This can be combined with a test.
+```
 035 if 5 == S then 035 set 5 = p
-035 print
-records write test.mrc as binary
-REM language filter eng then [print|write file.name as [text|binary]] 
+```
 
-REM language eng then records write bin_test.mrc as binary
+TODO commands
+-------------------
+Language filter. 
+
+
+Running MARCer
+==============
+
+This application is written in Java 8.1 and can be run on command line. Currently the MARCer recognizes the following switches
+
+```
+-d Switch on debugging information.
+-f <file>.mrc MARC 21 file to be read and analysed.
+-i <commands.file> The file of commands to run. The file may have any extension.
+-v Switch on verbose mode.
+```
