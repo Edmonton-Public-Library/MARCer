@@ -197,8 +197,12 @@ output_modified_only is true, the record will be written to file.
 
 Language filter
 ---------------
-A filter has a higher order of operation than any modification. Only files that match 
-the filter are output or operated on. Only works with variable **output_modified_only** set true.
+Only works with variable **output_modified_only** set true.
+A filter has a higher order of operation than any modification. Only records that match 
+the filter are output or operated on whether they have changes or not. 
+
+Conversely if **output_modified_only** is set true, and changes are made but none of the 
+changed files match the language indicator, the changes will not appear in the output file.
 
 Currently the only filter is the 'language' filter. You can specify any 3-character language
 specified by [MARC 21 language code list](https://www.loc.gov/marc/languages/language_code.html)
