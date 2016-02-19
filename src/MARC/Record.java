@@ -117,13 +117,11 @@ public class Record
     }
     
     /**
-     * The record is considered damaged if it is not a UTF-8 encoded record, but
-     * does contain multilingual characters. This is a special method for testing
-     * bastardized ANSEL output.
-     * @return true if the file is not UTF-8, but does contain extended character
-     * modifiers.
+     * Tests if the record contain multilingual characters.
+     * @return true if the file contains multilingual characters, and false
+     * otherwise.
      */
-    public boolean containsDamagedCharacters()
+    public boolean containsMultilingualCharacters()
     {
         // Traverse all the tags and check the data for out-of-range characters.
         OUTER: for (DirectoryEntry de: this.directoryEntries)

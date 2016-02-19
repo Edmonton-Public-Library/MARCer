@@ -62,7 +62,7 @@ public class Parser
                     // Ignore everything after a comment char or REM statement for those that like syntax highlighting on cfg files.
                     if (token.startsWith("#")) continue OUTER;
                     if (token.compareToIgnoreCase("REM") == 0) continue OUTER;
-                    if (token.length() == 0) continue OUTER; // skip blank lines.
+                    if (token.isEmpty()) continue OUTER; // skip blank lines.
                     usefulTokens.add(token);
                 }
                 // To get here we have the syntax subject:verb:predicate.
@@ -98,7 +98,6 @@ public class Parser
             SyntaxError
     {
         Instruction instruction;
-        String subject = tokens.get(0).toLowerCase();
         String verb    = tokens.get(1).toLowerCase();
         
         switch (verb) // the first token is the subject.
@@ -149,7 +148,7 @@ public class Parser
     {
         try
         {
-            return Integer.parseInt(n);
+            return Integer.parseInt(n.trim());
         }
         catch (NumberFormatException e)
         {

@@ -72,6 +72,7 @@ public class Leader
     //0 - Undefined
         
     public final static int LENGTH = 24;
+    public final static String TAG = "LDR";
     //00-04	Logical record length
     private int logicalRecordLength;
     //12-16	Base address of data Length of Leader and Directory

@@ -61,8 +61,7 @@ public class MARCSplitter
         try
         {
             DataInputStream in = new DataInputStream(new FileInputStream(f));
-            int recordCount    = 0;
-            int damagedRecords = 0;
+            int multilingualRecord = 0;
             while (true)
             {
                 Record record = readMARCRecord(in);
@@ -70,16 +69,15 @@ public class MARCSplitter
                 {
                     break;
                 }
-                if (record.containsDamagedCharacters())
+                if (record.containsMultilingualCharacters())
                 {
-                    damagedRecords++;
+                    multilingualRecord++;
                     System.out.println(String.format("%15s", record.getTag("035")));
                 }
-                recordCount++;
                 marcRecords.add(record);
             }
             String fString = String.format("%10s %7d\n%10s %7d", 
-                "damaged:", damagedRecords, "total:", recordCount);
+                "multilingual records:", multilingualRecord, "total:", marcRecords.size());
             System.out.println(fString);
             
             in.close();

@@ -209,3 +209,8 @@ This application is written in Java 8.1 and can be run on command line. Currentl
 -i <commands.file> The file of commands to run. The file may have any extension.
 -v Switch on verbose mode.
 ```
+
+From the command line:
+```
+java -jar dist/MARCer.jar -d -i instruction.cmd -f samples.mrc
+```

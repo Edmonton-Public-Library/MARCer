@@ -33,9 +33,14 @@ public class Tag implements Comparable
      */
     public Tag(String name)
     {
+        if (name.compareToIgnoreCase(Leader.TAG) == 0)
+        {
+            this.tag = Leader.TAG;
+            return;
+        }
         try
         {
-            int tagNumber = Integer.parseInt(name);
+            int tagNumber = Integer.parseInt(name.trim());
             if (tagNumber < 1 || tagNumber > 999)
             {
                 String msg = String.format("** error, invalid tag name\n."
@@ -46,7 +51,7 @@ public class Tag implements Comparable
         catch (NumberFormatException e)
         {
             System.err.printf("** error, invalid tag name\n."
-                    + "Must be a value between '001' and '999'.\n%s\n", name);
+                    + "Must be a value between '001' and '999' but got '%s'\n", name);
             System.exit(3);
         }
         this.tag = name;
@@ -60,7 +65,7 @@ public class Tag implements Comparable
     public static int getIntTag(String tagName)
     {
         // Convert the tag name into an integer if possible.
-        int tagNumber = Integer.parseInt(tagName);
+        int tagNumber = Integer.parseInt(tagName.trim());
         return tagNumber;
     }
     
