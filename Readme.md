@@ -52,9 +52,9 @@ set var debug = true
 ```
 
 The following variables are currently recognized.
-1) **debug** - boolean (true or false)
-2) **output_modified_only** - boolean (true or false), true will output a record if it modified or matches a filter (see filter), otherwise all records will be written to file.
-3) **strict** - boolean (true or false), if set true MARCer ignores minor errors, some records will fail to appear in output.
+* **debug** - boolean (true or false)
+* **output_modified_only** - boolean (true or false), true will output a record if it modified or matches a filter (see filter), otherwise all records will be written to file.
+* **strict** - boolean (true or false), if set true MARCer ignores minor errors, some records will fail to appear in output.
 If false, an exception is thrown and the MARCer will stop. A warning will always be issued.
 
 Printing to screen
