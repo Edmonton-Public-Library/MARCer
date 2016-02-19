@@ -201,8 +201,7 @@ Only works with variable **output_modified_only** set true.
 A filter has a higher order of operation than any modification. Only records that match 
 the filter are output or operated on whether they have changes or not. 
 
-Conversely if **output_modified_only** is set true, and changes are made but none of the 
-changed files match the language indicator, the changes will not appear in the output file.
+Conversely unmatched records will not appear in the output file even if they had changes.
 
 Currently the only filter is the 'language' filter. You can specify any 3-character language
 specified by [MARC 21 language code list](https://www.loc.gov/marc/languages/language_code.html)
