@@ -20,6 +20,7 @@
  */
 package marcer;
 
+import MARC.MARCFile;
 import instructions.Instruction;
 import instructions.Parser;
 import java.util.ArrayList;
@@ -93,14 +94,10 @@ public class MARCer
             if (cmd.hasOption("f"))
             {
                 String marcFilePath = cmd.getOptionValue("f");
-                if (Instruction.isOutputOnChangeOnly())
-                {
-                    marcFile = new MARCFile(marcFilePath, DEBUG, true);
-                }
-                else
-                {
-                    marcFile = new MARCFile(marcFilePath, DEBUG);
-                }
+                marcFile = new MARCFile.Builder(marcFilePath)
+                    .debug(DEBUG)
+                    .setOutputOnModifyOnly(Instruction.isOutputOnChangeOnly())
+                    .setStrict(Instruction.isStrict()).build();
             }
             else
             {
@@ -121,5 +118,4 @@ public class MARCer
         }
         System.exit(0);
     }
-    
 }

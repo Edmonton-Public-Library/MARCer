@@ -52,7 +52,6 @@ public class Parser
             OUTER: while ((instructionLine = br.readLine()) != null) 
             {
                 lineNumber++;
-                if (this.debug) System.out.printf("line # %3d) '%s'\n", lineNumber, instructionLine);
                 instructionLine = instructionLine.trim();
                 // Split the string into tokens.
                 String[] tokens = instructionLine.split("\\s+");
@@ -65,6 +64,7 @@ public class Parser
                     if (token.isEmpty()) continue OUTER; // skip blank lines.
                     usefulTokens.add(token);
                 }
+                if (this.debug) System.out.printf("line # %3d) '%s'\n", lineNumber, instructionLine);
                 // To get here we have the syntax subject:verb:predicate.
                 try
                 {
@@ -129,6 +129,9 @@ public class Parser
                 break;
             case "touch":
                 instruction = new Touch(tokens);
+                break;
+            case "filter":
+                instruction = new LanguageFilter(tokens);
                 break;
             default:
                 throw new UnsupportedOperationException(String.format("operation '%s' not supported.", verb));

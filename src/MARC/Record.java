@@ -41,7 +41,19 @@ import java.util.List;
 public class Record
 {
     /**
-     * Returns a list of integers where record separators are found.
+     * Set strict/non-strict, allowing reporting but continues processing, verses
+     * throwing an exception on encountering an error.
+     * @param strict true if you wish throw exception on MARC error, false to ignore
+     * and continue on.
+     */
+    public static void setStrict(boolean strict)
+    {
+        isRelaxedChecking = !strict;
+        Tag.setStrict(strict);
+    }
+    
+    /**
+     * Returns a list of index integers where record separators are found.
      * @param recordArray the entire record as an array of bytes.
      * @return List of integers representing each character of the record.
      */
@@ -86,12 +98,18 @@ public class Record
     // Ingnore tags are not checked for UTF8 compliance.
     private final List<Tag> ignoreTags;
     private final List<DirectoryEntry> directoryEntries;
+    private static boolean isRelaxedChecking = false;
     
+    /**
+     * Creates a record from the argument bytes.
+     * @param leader object. Contains the remaining record's geometry.
+     * @param recordArray bytes read from the MARC file.
+     */
     public Record(Leader leader, byte[] recordArray)
     {
         this.leader           = leader;
         this.directoryEntries = new ArrayList<>();
-        List<Integer> splits = Record.splitOnRS(recordArray);
+        List<Integer> splits  = Record.splitOnRS(recordArray);
         // the first one on the list is a list of all the tags lengths and offsets, 
         // they are all 12 bytes long. Consume the first one because the rest are
         // the offsets to the data itself.
@@ -108,7 +126,25 @@ public class Record
             // get the name of the tag.
             String tagName = tags.get(tagIndex++);
             // make a new directory entry
-            this.directoryEntries.add(new DirectoryEntry(tagName, tagContent));
+            DirectoryEntry de = null;
+            try
+            {
+                de = new DirectoryEntry(tagName, tagContent);
+            }
+            catch (MARCError e)
+            {
+                System.err.printf("** offending record's TCN is '%s'\n", this.getTCN());
+                // Back up and assume this is the new record start if relaxed mode is on.
+                if (isRelaxedChecking)
+                {
+                    // Just keep going, we've warned them, but the user isn't fussy.
+                    // The user will be missing two records, one that started ok and 
+                    // the one after that that broke on the wrong RS.
+                    continue;
+                }
+                System.exit(3);
+            }
+            this.directoryEntries.add(de);
         }
         this.ignoreTags= new ArrayList<>();
         // Don't check these tags for compliance, they don't take free-form characters.
@@ -322,36 +358,19 @@ public class Record
      * @return the contents of the '035' tag, or an empty string if the tag 
      * wasn't found in this record.
      */
-    public String getTCN()
+    public final String getTCN()
     {
+        // Final because called in constructor.
         // Re-factored.
         String tag = this.getTag("035");
         // clean the tag of any (Sirsi) and what ever.
         int pos = tag.lastIndexOf(" ");
         if (pos > -1)
         {
-            return tag.substring(pos +1);
+            // advance past the indicators '$' and 'a'
+            return tag.substring(pos +3);
         }
         return tag;
-    }
-    
-    /**
-     * 
-     * @return string of the language encoding for this record.
-     */
-    public String getLanguageEncoding()
-    {
-        // Refactored, tested.
-        StringBuilder sb = new StringBuilder();
-        for (DirectoryEntry de: this.directoryEntries)
-        {
-            if (de.getTag().isTag("008"))
-            {
-                sb.append(de.content.getRange(35, 38));
-                break;
-            }
-        }
-        return sb.toString();
     }
     
     /**
@@ -378,7 +397,10 @@ public class Record
         // sgn - Sign languages
         // und - Undetermined
         // [aaa] - Three-character alphabetic code
-        return this.getLanguageEncoding().compareTo(search) == 0;
+        String t008 = this.getTag("008");
+        String language = t008.substring(35, 38);
+//        System.err.printf("'%s'>>>>%s<<<<<\n", t008, language);
+        return language.compareTo(search) == 0;
     }
     
     /**

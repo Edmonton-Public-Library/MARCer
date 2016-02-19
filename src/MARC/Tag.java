@@ -25,19 +25,16 @@ import java.util.List;
 public class Tag implements Comparable
 {
     private final String tag;
+    private static boolean isRelaxedChecking = false;
     
     /**
      * Create tag from given name. Checks that the tag is a valid tag name, that is
      * the tag is a string of 3 character numbers that range from 001 to 999.
      * @param name the tags name as a String (like '035').
+     * @throws MARCError if tag was not a valid tag name.
      */
-    public Tag(String name)
+    public Tag(String name) throws MARCError
     {
-        if (name.compareToIgnoreCase(Leader.TAG) == 0)
-        {
-            this.tag = Leader.TAG;
-            return;
-        }
         try
         {
             int tagNumber = Integer.parseInt(name.trim());
@@ -50,9 +47,9 @@ public class Tag implements Comparable
         }
         catch (NumberFormatException e)
         {
-            System.err.printf("** error, invalid tag name\n."
-                    + "Must be a value between '001' and '999' but got '%s'\n", name);
-            System.exit(3);
+            throw new MARCError(
+                    String.format("** error, invalid tag name. The MARC file is malformed.\n"
+                    + "** Tags must have a value between '001' and '999' but got '%s'", name));
         }
         this.tag = name;
     }
@@ -67,6 +64,17 @@ public class Tag implements Comparable
         // Convert the tag name into an integer if possible.
         int tagNumber = Integer.parseInt(tagName.trim());
         return tagNumber;
+    }
+    
+    /**
+     * Set strict/non-strict, allowing reporting but continues processing, verses
+     * throwing an exception on encountering an error.
+     * @param strict true if you wish throw exception on MARC error, false to ignore
+     * and continue on.
+     */
+    static void setStrict(boolean strict)
+    {
+        isRelaxedChecking = !strict;
     }
     
     /**

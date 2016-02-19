@@ -99,6 +99,14 @@ public class DirtyRecord extends MARC.Record
     }
     
     /**
+     * Opposite of touch, clears the dirty bit.
+     */
+    public void unTouch()
+    {
+        this.dirtyBit = false;
+    }
+    
+    /**
      * Allows the record to be touched even if there are no changes.
      */
     public void touch()

@@ -54,7 +54,13 @@ public class DirectoryEntry implements Comparable
         this.content = new Content(data);
     }
     
-    public DirectoryEntry(String name, byte[] data) 
+    /**
+     * Creates a new DirectoryEntry.
+     * @param name tag name of this entry.
+     * @param data the payload of the tag.
+     * @throws MARCError if the previous record was incorrectly terminated.
+     */
+    public DirectoryEntry(String name, byte[] data) throws MARCError
     {
         this.tag = new Tag(name);
         this.content = new Content(data);

@@ -17,17 +17,19 @@ package instructions;
 
 import MARC.DirtyRecord;
 import MARC.Record;
+import instructions.Parser.SyntaxError;
 import java.util.List;
 
 /**
- * Filter conditions on a record.
- * @author Andrew
+ * LanguageFilter filters file for output. All records that match the language 
+ * condition are output whether they contain changes or not.
+ * @author Andrew Nisbet
  */
-public class Filter extends Instruction
+public class LanguageFilter extends Instruction
 {
     private Record record;
     private String predicate;
-    public Filter(List<String> tokens) 
+    public LanguageFilter(List<String> tokens) throws SyntaxError 
     {
         this.tag = tokens.remove(0);
         this.verb = tokens.remove(0);
@@ -42,6 +44,15 @@ public class Filter extends Instruction
                         String.format("%s doesn't support %s not supported.", 
                                 this.verb, filterType));
         }
+        switch (this.verb)
+        {
+            case "filter":
+                break;
+            default:
+                throw new SyntaxError(
+                        String.format("%s doesn't support %s not supported.", 
+                                this.verb, filterType));
+        }
     }
 
     @Override
@@ -53,11 +64,13 @@ public class Filter extends Instruction
     @Override
     public boolean run() 
     {
+        if (this.record instanceof DirtyRecord)
+        {
+            ((DirtyRecord)this.record).unTouch();
+        }
         if (this.record.matchesLanguageIndicator(this.predicate))
         {
-            // there may be no changes to the record, but we want the record to
-            // be output if the user has selected so in the intructions.
-            if (Instruction.writeChangedRecordsOnly && this.record instanceof DirtyRecord)
+            if (this.record instanceof DirtyRecord)
             {
                 ((DirtyRecord)this.record).touch();
             }
@@ -65,5 +78,4 @@ public class Filter extends Instruction
         }
         return false;
     }
-    
 }

@@ -48,6 +48,9 @@ class Variable extends Instruction
             case "output_modified_only":
                 Instruction.setOutputOnChangeOnly(Boolean.parseBoolean(variableValue));
                 break;
+            case "strict":
+                Instruction.setStrict(Boolean.parseBoolean(variableValue));
+                break;
             default:
                 this.symbolTable.put(variableName, variableValue);
                 break;

@@ -54,7 +54,9 @@ set var debug = true
 The following variables are currently recognized.
 ```
 debug - boolean (true or false)
-output_modified_only - boolean (true or false), otherwise all records will be written to file if requested. See Writing files.
+output_modified_only - boolean (true or false), true will output a record if it modified or matches a filter (see filter), otherwise all records will be written to file.
+strict - boolean (true or false), if set true MARCer ignores minor errors, some records will fail to appear in output.
+If false, an exception is thrown and the MARCer will stop. A warning will always be issued.
 ```
 
 
@@ -193,9 +195,22 @@ Typically you would use it with and if statement.
 which will write all the records that contain 's' in the 23 position of the 008 record, ensuring that if there are no other changes and 
 output_modified_only is true, the record will be written to file.
 
-TODO commands
--------------------
-Language filter. 
+Language filter
+---------------
+A filter has a higher order of operation than any modification. Only files that match 
+the filter are output or operated on. Only works with variable **output_modified_only** set true.
+
+Currently the only filter is the 'language' filter. You can specify any 3-character language
+specified by [MARC 21 language code list](https://www.loc.gov/marc/languages/language_code.html)
+as follows.
+```
+syntax: language filter <abc>
+```
+Example:
+```
+language filter eng
+```
+will select and output only records that have a 'eng' in the 008 field.
 
 
 Running MARCer

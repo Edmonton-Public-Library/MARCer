@@ -18,6 +18,7 @@ public abstract class Instruction
     protected static boolean debug = false;
     protected static boolean ignoreIndicators = false;
     protected static boolean writeChangedRecordsOnly = false;
+    protected static boolean isStrict = false;
     
     /**
      * Turns on debugging information.
@@ -26,6 +27,24 @@ public abstract class Instruction
     static void setDebug(boolean debug)
     {
         Instruction.debug = debug;
+    }
+    
+    /**
+     * Reports the current setting of the strict flag.
+     * @return the value of the strict flag.
+     */
+    public static boolean isStrict() 
+    {
+        return isStrict;
+    }
+    
+    /**
+     * Sets the strict-checking flag.
+     * @param strict true to be strict about error and false otherwise.
+     */
+    static void setStrict(boolean strict)
+    {
+        isStrict = strict;
     }
     
     /**
