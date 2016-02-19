@@ -180,8 +180,11 @@ This can be combined with a test.
 ```
 Touching a records
 ------------------
-But what if you just want all the records that have 'eng' encoding, can you write a file of just those records, without making changes?
-Yes you can with the touch command.
+Since MARCer is used for editing records it has a variable that allows you to output only
+the modified records, but what if you haven't done any modification, and still just want all
+the records that have, say an 'S' in position 5 of, say, the 035 field, or what ever. Touching
+a file tells MARCer that reguardless if there were modification, output this record. Only works
+with **output_modified_only** switch set to true.
 ```
 syntax: record touch
 ```
