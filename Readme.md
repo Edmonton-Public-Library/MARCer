@@ -3,7 +3,7 @@ MARCer
 
 Overview
 --------
-I hate the fact that MARC 21 doesn't have any tools that do what I want to do. Marcedit is good but basically
+I hate the fact that MARC 21 doesn't have any tools that do what I want to do. [Marcedit](http://marcedit.reeset.net/downloads) is good but basically
 a text editor and it has several problems. Perl has MARC::Batch and there is a little documentation to get 
 you going, but nothing for when the rubber hits the road. I need something that I can just specify what the 
 Cataloguers want and let'er go to it. For me MARCer is that tool.
