@@ -57,7 +57,8 @@ The following variables are currently recognized.
 * **strict** - boolean (true or false), if set true MARCer ignores minor errors, some records will fail to appear in output.
 If false, an exception is thrown and the MARCer will stop. A warning will always be issued.
 
-### Testing and Filtering
+Testing and Filtering
+=====================
 
 Testing tags
 ------------
@@ -112,7 +113,8 @@ language filter eng
 ```
 will select and output only records that have a 'eng' in the 008 field.
 
-### Modifying tags
+Modifying tags
+==============
 
 Append to a tag
 ---------------
@@ -182,7 +184,8 @@ Typically you would use it with and if statement.
 which will write all the records that contain 's' in the 23 position of the 008 record, ensuring that if there are no other changes and 
 output_modified_only is true, the record will be written to file.
 
-### Output
+Output
+======
 
 Printing to screen
 ------------------
@@ -217,7 +220,8 @@ record write test.mrc as binary
 ```
 writes a given record as a binary MARC 21 file.
 
-### Running MARCer
+Running MARCer
+==============
 
 This application is written in Java 8.1 and can be run on command line. Currently the MARCer recognizes the following switches
 
