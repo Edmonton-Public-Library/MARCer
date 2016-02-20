@@ -57,94 +57,7 @@ The following variables are currently recognized.
 * **strict** - boolean (true or false), if set true MARCer ignores minor errors, some records will fail to appear in output.
 If false, an exception is thrown and the MARCer will stop. A warning will always be issued.
 
-Printing to screen
-------------------
-
-Print each record in the MARC file with the following.
-```
-record print
-```
-All the 003 tags can be output like so.
-```
-003 print
-```
-or 
-```
-leader print
-```
-
-
-Delete tags
------------
-Sometimes you need to delete tags of a specific type. Use the delete command.
-```
-synatx: <tag> delete [matching <string>]
-```
-as in
-```
-035 delete
-```
-Sometimes you need to delete tags that contain a specific string. Leave out the keyword 'matching' and 
-string predicate, and it will delete all the 035 tags in all the records.
-```
-035 delete matching EBZ
-```
-
-Writing MARC 21
----------------
-
-You can output your changes to text or binary MARC with the following.
-```
-syntax: record[s] write <file.name> as [text|binary]
-```
-Example:
-```
-records write test.txt as text
-```
-outputs all the records in a single text file, while
-```
-record write test.mrc as binary
-```
-writes a given record as a binary MARC 21 file.
-
-
-Modify tags
-===========
-
-Append to a tag
----------------
-The are just text, so a find and replace in Marcedit would do the job, but then you have to 
-compile the file back into MARC. Instead try the following.
-```
-<tag> append <text>
-```
-Example:
-```
-003 append http://some.nonsense.com/index.php
-```
-
-Pre-pend to a tag
------------------
-Sometimes you need to pre-pend information to a tag.
-```
-syntax: <tag> pre-pend <text>
-```
-Example
-```
-003 pre-pend afore string of some sort.
-```
-
-Add new tag
------------
-The following will add a new tag to the MARC record.
-```
-syntax: <tag> add <tag content>
-```
-Like so
-```
-035 add (OCLC) o2391456
-```
-The first non-white space character until the end of line character (EOL) is considered content for the tag.
+### Testing and Filtering
 
 Testing tags
 ------------
@@ -178,22 +91,6 @@ This can be combined with a test.
 ```
 035 if 5 == S then 035 set 5 = p
 ```
-Touching a records
-------------------
-Since MARCer is used for editing records it has a variable that allows you to output only
-the modified records, but what if you haven't done any modification, and still just want all
-the records that have, say an 'S' in position 5 of, say, the 035 field, or what ever. Touching
-a file tells MARCer that reguardless if there were modification, output this record. Only works
-with **output_modified_only** switch set to true.
-```
-syntax: record touch
-```
-Typically you would use it with and if statement.
-```
-008 if 23 == s then record touch
-```
-which will write all the records that contain 's' in the 23 position of the 008 record, ensuring that if there are no other changes and 
-output_modified_only is true, the record will be written to file.
 
 Language filter
 ---------------
@@ -215,9 +112,112 @@ language filter eng
 ```
 will select and output only records that have a 'eng' in the 008 field.
 
+### Modifying tags
 
-Running MARCer
-==============
+Append to a tag
+---------------
+The are just text, so a find and replace in Marcedit would do the job, but then you have to 
+compile the file back into MARC. Instead try the following.
+```
+<tag> append <text>
+```
+Example:
+```
+003 append http://some.nonsense.com/index.php
+```
+
+Pre-pend to a tag
+-----------------
+Sometimes you need to pre-pend information to a tag.
+```
+syntax: <tag> pre-pend <text>
+```
+Example
+```
+003 pre-pend afore string of some sort.
+```
+
+Add new tags
+-----------
+The following will add a new tag to the MARC record.
+```
+syntax: <tag> add <tag content>
+```
+Like so
+```
+035 add (OCLC) o2391456
+```
+The first non-white space character until the end of line character (EOL) is considered content for the tag.
+
+Delete tags
+-----------
+Sometimes you need to delete tags of a specific type. Use the delete command.
+```
+synatx: <tag> delete [matching <string>]
+```
+as in
+```
+035 delete
+```
+Sometimes you need to delete tags that contain a specific string. Leave out the keyword 'matching' and 
+string predicate, and it will delete all the 035 tags in all the records.
+```
+035 delete matching EBZ
+```
+
+Touching a records
+------------------
+Since MARCer is used for editing records it has a variable that allows you to output only
+the modified records, but what if you haven't done any modification, and still just want all
+the records that have, say an 'S' in position 5 of, say, the 035 field, or what ever. Touching
+a file tells MARCer that reguardless if there were modification, output this record. Only works
+with **output_modified_only** switch set to true.
+```
+syntax: record touch
+```
+Typically you would use it with and if statement.
+```
+008 if 23 == s then record touch
+```
+which will write all the records that contain 's' in the 23 position of the 008 record, ensuring that if there are no other changes and 
+output_modified_only is true, the record will be written to file.
+
+### Output
+
+Printing to screen
+------------------
+
+Print each record in the MARC file with the following.
+```
+record print
+```
+All the 003 tags can be output like so.
+```
+003 print
+```
+or 
+```
+leader print
+```
+
+Writing MARC 21
+---------------
+
+You can output your changes to text or binary MARC with the following.
+```
+syntax: record[s] write <file.name> as [text|binary]
+```
+Example:
+```
+records write test.txt as text
+```
+outputs all the records in a single text file, while
+```
+record write test.mrc as binary
+```
+writes a given record as a binary MARC 21 file.
+
+### Running MARCer
 
 This application is written in Java 8.1 and can be run on command line. Currently the MARCer recognizes the following switches
 
