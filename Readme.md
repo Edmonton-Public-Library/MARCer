@@ -23,11 +23,12 @@ The instructions are modelled on triples of the form.
 ```
 <subject> <verb> <predicate>
 ```
+**Note** <tag> means any MARC tag like '008', or the keyword 'leader' (without quotes).
 
 The following are recognized commands
 =====================================
 
-Commenting
+Comments
 ----------
 
 Comments (always welcome)
@@ -91,6 +92,19 @@ Example:
 This can be combined with a test.
 ```
 035 if 5 == S then 035 set 5 = p
+```
+
+Matching regular expressions
+----------------------------
+MARCer can match strings with the *if matches* command. The *if matches* command uses Java's 
+regular expression engine. See [here](https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html) 
+for more information and [here](http://www.regexplanet.com/advanced/java/index.html) for a on line tester.
+```
+syntax: <tag> if matches "<regex>" then <command>
+```
+Example:
+```
+538 if matches ".+[W|w]orld\s+[W|w]ide\s+[W|w]eb(.+)?" then 538 print
 ```
 
 Language filter

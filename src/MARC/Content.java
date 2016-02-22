@@ -29,6 +29,16 @@ public class Content
 {
     public final static int DEFAULT_SIZE      = 32;
     public final static char SUB_FIELD_CHAR   = '$';
+    // Indicators -- The use of indicators is explained in fields where 
+    // they are used. Indicators are one-digit numbers. Beginning with 
+    // the 010 field, in every field -- following the tag -- are two 
+    // character positions, one for Indicator 1 and one for Indicator 2. 
+    // The indicators are not actually defined in all fields, however. 
+    // And it is possible that a 2nd indicator will be used, while the 1st 
+    // indicator remains undefined (or vice versa). When an indicator is 
+    // undefined, the character position will be represented by the 
+    // character # (for blank space).
+    public final static int START_INDICATOR   = 10; // threshold after which all tags have indicators.
     public final static int GS                = 0x1d;
     public final static int RS                = 0x1e;
     public final static int US                = 0x1f;
@@ -211,6 +221,54 @@ public class Content
             }
         }
         return array;
+    }
+    
+    /**
+     * Produces the content in the same format as Marcedit.
+     * @param tagName name of the tag this content refers to.
+     * @return String version of the content in mrk style.
+     */
+    public String getMRKString(String tagName)
+    {
+        // convert to a number. Tags below 10 have all spaces replaced with '\'
+        int iTag = 0;
+        try
+        {
+            iTag = Integer.parseInt(tagName.trim());
+        }
+        catch (NumberFormatException e)
+        {
+            // This ocurs if the LDR is passed.
+            if (! tagName.equalsIgnoreCase(Leader.TAG))
+            {
+                System.err.printf("** error expected tag but got '%s'\n", tagName);
+            }
+            System.exit(1);
+        }
+        if (iTag < START_INDICATOR)
+        {
+            return this.content.replace(' ', '\\');
+        }
+        StringBuilder sb = new StringBuilder();
+        if (this.content.charAt(0) == ' ') 
+        {
+            sb.append('\\');
+        }
+        else
+        {
+            sb.append(this.content.charAt(0));
+        }
+        if (this.content.charAt(1) == ' ') 
+        {
+            sb.append('\\');
+        }
+        else
+        {
+            sb.append(this.content.charAt(1));
+        }
+        sb.append(this.content.substring(2));
+        // now append the substring of chars after the indicators
+        return sb.toString();
     }
     
     /**

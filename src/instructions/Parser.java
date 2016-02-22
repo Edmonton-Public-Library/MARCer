@@ -56,15 +56,43 @@ public class Parser
                 // Split the string into tokens.
                 String[] tokens = instructionLine.split("\\s+");
                 List<String> usefulTokens = new ArrayList<>();
+                StringBuffer sbToken = new StringBuffer();
                 for (String token : tokens) 
                 {
                     // Ignore everything after a comment char or REM statement for those that like syntax highlighting on cfg files.
                     if (token.startsWith("#")) continue OUTER;
                     if (token.compareToIgnoreCase("REM") == 0) continue OUTER;
                     if (token.isEmpty()) continue OUTER; // skip blank lines.
+                    if (token.startsWith("\"") && token.endsWith("\""))
+                    {
+                        usefulTokens.add(token.substring(1, token.length() -1));
+                        System.err.printf(">>>%s<<<\n", token.substring(1, token.length() -1));
+                        continue;
+                    }
+                    if (token.startsWith("\""))
+                    {
+                        // strip off the initial quote.
+                        sbToken.append(token.substring(1)).append(' ');
+                        continue;
+                    }
+                    if (token.endsWith("\""))
+                    {
+                        // strip off the trailing quote.
+                        sbToken.append(token.substring(0, token.length() -1));
+                        token = sbToken.toString();
+                        System.err.printf(">>>%s<<<\n", token);
+                        sbToken = new StringBuffer();
+                    }
+                    // Denotes that we found a '"' at least a token ago, 
+                    // and we continue adding tokens until we find the end quote.
+                    else if (sbToken.length() > 0)
+                    {
+                        sbToken.append(token).append(' ');
+                        continue;
+                    }
                     usefulTokens.add(token);
                 }
-                if (this.debug) System.out.printf("line # %3d) '%s'\n", lineNumber, instructionLine);
+                if (this.debug) System.out.printf("line number %3d: %s\n", lineNumber, instructionLine);
                 // To get here we have the syntax subject:verb:predicate.
                 try
                 {
@@ -76,7 +104,9 @@ public class Parser
                     System.err.printf("** Syntax error on line %d.\n", lineNumber);
                     System.exit(3);
                 }
+                
             }
+//            System.exit(0);
         } 
         catch (IOException e) 
         {
@@ -106,7 +136,14 @@ public class Parser
                 instruction = new SetPositionN(tokens);
                 break;
             case "if":
-                instruction = new IfThen(tokens);
+                switch (tokens.get(2))
+                {
+                    case "matches":
+                        instruction = new IfMatchThen(tokens);
+                        break;
+                    default:
+                        instruction = new IfThen(tokens);
+                }
                 break;
             case "print":
                 instruction = new PrintTags(tokens);

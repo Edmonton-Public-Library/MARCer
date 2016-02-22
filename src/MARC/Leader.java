@@ -187,6 +187,11 @@ public class Leader
     @Override
     public String toString()
     {
-        return Utility.getString(this.leader);
+        StringBuilder sb = new StringBuilder();
+        sb.append("=")
+                .append(Leader.TAG)
+                .append("  ")
+                .append(String.format("%s", Utility.getString(this.leader)));
+        return sb.toString();
     }
 }

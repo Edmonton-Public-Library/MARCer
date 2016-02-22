@@ -531,11 +531,11 @@ public class Record
         StringBuilder sb = new StringBuilder();
         // output the leader.
         sb.append(this.leader.toString());
-        sb.append("\n");
+        sb.append("\r\n");
         for (DirectoryEntry dEntry: this.directoryEntries)
         {
             sb.append(dEntry.toString());
-            sb.append("\n");
+            sb.append("\r\n");
         }
         return sb.toString();
     }

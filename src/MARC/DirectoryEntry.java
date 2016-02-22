@@ -70,8 +70,10 @@ public class DirectoryEntry implements Comparable
     public String toString() 
     {
         StringBuilder sb = new StringBuilder();
-//        sb.append(this.tag).append("<=>").append(Utility.getString(content));
-        sb.append(this.tag).append("<=>").append(this.content);
+        sb.append("=")
+                .append(this.tag)
+                .append("  ")
+                .append(this.content.getMRKString(this.tag.toString()));
         return sb.toString();
     }
 
