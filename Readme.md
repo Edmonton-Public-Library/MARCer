@@ -23,7 +23,7 @@ The instructions are modelled on triples of the form.
 ```
 <subject> <verb> <predicate>
 ```
-**Note** <tag> means any MARC tag like '008', or the keyword 'leader' (without quotes).
+**Note** ```<tag>``` means any MARC tag like '008', or the keyword 'leader' (without quotes).
 
 The following are recognized commands
 =====================================
