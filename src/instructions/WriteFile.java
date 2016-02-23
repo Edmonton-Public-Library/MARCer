@@ -121,7 +121,9 @@ class WriteFile extends Instruction
                     }
                 }
                 r.write(out);
+                Instruction.writtenRecords++;
             }
+            out.flush();
             out.close();
             this.records.clear();
         } 
@@ -174,7 +176,9 @@ class WriteFile extends Instruction
                     }
                 }
                 writer.println(r.toString());
+                Instruction.writtenRecords++;
             }
+            writer.flush();
             writer.close();
             // Clear the records so every time we are requested to ouput a file
             // we only output the records we haven't handled yet.
@@ -221,5 +225,4 @@ class WriteFile extends Instruction
         }
         return true;
     }
-    
 }

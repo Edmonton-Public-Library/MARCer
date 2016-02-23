@@ -46,7 +46,7 @@ public class MARCer
 
     public static void main(String[] args)
     {
-        System.out.println("Running......");
+        System.out.println("Running...");
         // parse the command line.
         MARCFile marcFile = null;
         List<Instruction> instructionList = new ArrayList<>();

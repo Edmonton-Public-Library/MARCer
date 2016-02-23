@@ -13,8 +13,21 @@ import MARC.Record;
  */
 public abstract class Instruction 
 {
+
+    public static int getPrintedRecords()
+    {
+        return printedRecords;
+    }
+
+    public static int getWrittenRecords()
+    {
+        return writtenRecords;
+    }
+    
     protected String tag;
     protected String verb;
+    protected static int printedRecords = 0;
+    protected static int writtenRecords = 0;
     protected static boolean debug = false;
     protected static boolean ignoreIndicators = false;
     protected static boolean writeChangedRecordsOnly = false;

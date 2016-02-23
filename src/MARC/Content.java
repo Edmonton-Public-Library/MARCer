@@ -42,7 +42,7 @@ public class Content
     public final static int GS                = 0x1d;
     public final static int RS                = 0x1e;
     public final static int US                = 0x1f;
-    private final String content;
+    private String content;
     
     /**
      * Creates an empty content array of size 256 bytes.
@@ -58,19 +58,29 @@ public class Content
      */
     public Content(byte[] bytes)
     {
-        StringBuilder sb = new StringBuilder();
-        for(byte b: bytes)
+        byte[] arr = new byte[bytes.length];
+        int i = 0;
+        for (byte b: bytes)
         {
-            if (b == US)
+            if (b == RS) 
             {
-                sb.append(SUB_FIELD_CHAR);
+                continue;
             }
             else
             {
-                sb.append((char)b);
+                arr[i++] = b;
             }
         }
-        this.content = sb.toString();
+        this.content = new String();
+        try
+        {
+            this.content = new String(arr, "UTF-8").replace((char)US, '$');
+        }
+        catch (UnsupportedEncodingException ex)
+        {
+            Logger.getLogger(Content.class.getName()).log(Level.SEVERE, 
+                    "Unsupported conversion 'UTF-8'.", ex);
+        }
     }
     
     /**
@@ -143,42 +153,6 @@ public class Content
     public int indexOf(int which)
     {
         return this.content.indexOf(which);
-    }
-    
-    /**
-     * Returns a substring of the content.
-     * @param start Start of the byte range of interest.
-     * @param end end of the byte range of interest.
-     * @return the string value of the byte range which could be empty if you screw
-     * up on start and end, and on how {@link String#substring(int, int)} works.
-     */
-    public String getRange(int start, int end)
-    {
-        if (this.content.isEmpty()) return "";
-        int s; // start
-        int e; // end
-        if (start < 0) 
-        {
-            s = 0;
-        }
-        else
-        {
-            s = start;
-        }
-        if (end >= this.content.length()) 
-        {
-            e = this.content.length();
-        }
-        else
-        {
-            e = end;
-        }
-        StringBuilder sb = new StringBuilder();
-        for (int i = s; i < e; i++)
-        {
-            sb.append(this.content.charAt(i));
-        }
-        return sb.toString();
     }
     
     /**

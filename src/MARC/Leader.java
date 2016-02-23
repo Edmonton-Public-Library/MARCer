@@ -76,7 +76,6 @@ public class Leader
     //00-04	Logical record length
     private int logicalRecordLength;
     //12-16	Base address of data Length of Leader and Directory
-    private int baseAddressOfData;
     private byte[] leader;
     
     public Leader(byte[] leaderBytes)
@@ -98,7 +97,6 @@ public class Leader
         }
         // 12-16	Base address of data Length of Leader and Directory
         stringVersion = Utility.getByteRange(this.leader, 12, 17);
-        this.baseAddressOfData = Integer.parseInt(stringVersion);
         // 20-23	Entry map
         // always the same 4500.
     }
@@ -193,5 +191,14 @@ public class Leader
                 .append("  ")
                 .append(String.format("%s", Utility.getString(this.leader)));
         return sb.toString();
+    }
+
+    /**
+     * Gets the leader's string content.
+     * @return string version of the leader's content.
+     */
+    public String getLeaderString()
+    {
+        return Utility.getString(this.leader);
     }
 }

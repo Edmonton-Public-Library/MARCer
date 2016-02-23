@@ -132,6 +132,8 @@ public class MARCFile
                 }
             }
         }
+        System.out.printf("Records printed %6d\n", Instruction.getPrintedRecords());
+        System.out.printf("Records written %6d\n", Instruction.getWrittenRecords());
     }
     
     /**

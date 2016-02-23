@@ -39,32 +39,6 @@ public class ContentTest
     }
 
     /**
-     * Test of getRange method, of class Content.
-     */
-    @Test
-    public void testGetByteRange() 
-    {
-        System.out.println("==getByteRange==");
-        int start = 3;
-        int end = 6;
-        Content instance = new Content(this.byteContent);
-        String expResult = "ccc";
-        String result = instance.getRange(start, end);
-        assertEquals(expResult, result);
-        // Oversize test.
-        expResult = "ccc";
-        result = instance.getRange(28, 31);
-        assertEquals(expResult, result);
-        result = instance.getRange(28, 70);
-        expResult = "cccc";
-        assertEquals(expResult, result);
-        expResult = " #$ccccccccccccccccccccccccccccc";
-        System.out.println(expResult);
-        System.out.println(instance.getRange(0, 32));
-        assertEquals(expResult, instance.getRange(0, 32));
-    }
-
-    /**
      * Test of getBytes method, of class Content.
      */
     @Test
@@ -122,6 +96,7 @@ public class ContentTest
     {
         System.out.println("==toString==");
         Content instance = new Content(this.byteContent);
+        System.out.printf(">>>>>>>>>>>>>>>>>>>>>>>>'%s'\n", instance.toString());
         assertTrue(" #$ccccccccccccccccccccccccccccc".compareTo(instance.toString()) == 0);
     }
 

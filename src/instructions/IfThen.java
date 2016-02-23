@@ -18,6 +18,7 @@ package instructions;
 import MARC.Content;
 import MARC.DirectoryEntry;
 import MARC.DirtyRecord;
+import MARC.Leader;
 import MARC.Record;
 import instructions.Parser.SyntaxError;
 import java.util.ArrayList;
@@ -92,14 +93,11 @@ public class IfThen extends Instruction
     @Override
     public boolean run() 
     {
-        // get the content of the tag and check for the value at the appointed test position.
-        List<DirectoryEntry> myTagEntries = this.record.getTags(this.tag);
         boolean result = false;
-        for (DirectoryEntry de: myTagEntries)
+        if (this.tag.equalsIgnoreCase(Leader.TAG))
         {
-            // find the value at the requested position of any of the tags .
-            Content content = de.getContent();
-            if (this.rightSide.charAt(0) == content.toString().charAt(this.leftSide))
+            Leader l = this.record.getLeader();
+            if (this.rightSide.charAt(0) == l.getLeaderString().charAt(this.leftSide))
             {
                 result = true;
                 // there may be no changes to the record, but we want the record to
@@ -108,7 +106,27 @@ public class IfThen extends Instruction
                 {
                     ((DirtyRecord)this.record).touch();
                 }
-                break; // At least one match found!
+            }
+        }
+        else
+        {
+            // get the content of the tag and check for the value at the appointed test position.
+            List<DirectoryEntry> myTagEntries = this.record.getTags(this.tag);
+            for (DirectoryEntry de: myTagEntries)
+            {
+                // find the value at the requested position of any of the tags .
+                Content content = de.getContent();
+                if (this.rightSide.charAt(0) == content.toString().charAt(this.leftSide))
+                {
+                    result = true;
+                    // there may be no changes to the record, but we want the record to
+                    // be output if the user has selected so in the intructions.
+                    if (Instruction.writeChangedRecordsOnly && this.record instanceof DirtyRecord)
+                    {
+                        ((DirtyRecord)this.record).touch();
+                    }
+                    break; // At least one match found!
+                }
             }
         }
         if (result)
@@ -121,5 +139,4 @@ public class IfThen extends Instruction
         }
         return result;
     }
-    
 }
