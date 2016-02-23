@@ -66,10 +66,7 @@ public class Content
             {
                 continue;
             }
-            else
-            {
-                arr[i++] = b;
-            }
+            arr[i++] = b;
         }
         this.content = new String();
         try
@@ -232,7 +229,7 @@ public class Content
         {
             sb.append(this.content.charAt(0));
         }
-        if (this.content.charAt(1) == ' ') 
+        if (this.content.charAt(1) == 0x20) 
         {
             sb.append('\\');
         }
