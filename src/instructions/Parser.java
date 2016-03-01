@@ -32,6 +32,11 @@ public class Parser
     public final static String LEADER = "leader";
     private final boolean debug; 
     
+    public Parser()
+    {
+        this.debug = true;
+    }
+    
     public Parser(boolean debug)
     {
         this.debug = debug;
@@ -172,7 +177,7 @@ public class Parser
             SyntaxError
     {
         Instruction instruction;
-        String verb    = tokens.get(1).toLowerCase();
+        String verb = tokens.get(1).toLowerCase();
         
         switch (verb) // the first token is the subject.
         {
@@ -209,11 +214,10 @@ public class Parser
                 break;
             case "test":
                 instruction = new Tester(tokens);
-                break; 
+                break;
             default:
                 throw new UnsupportedOperationException(String.format("operation '%s' not supported.", verb));
         }
-        Instruction.setDebug(debug);
         return instruction;
     }
     

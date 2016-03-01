@@ -51,7 +51,7 @@ public class Touch extends Instruction
     @Override
     public boolean run()
     {
-        if (Instruction.writeChangedRecordsOnly && this.record instanceof DirtyRecord)
+        if (Environment.isOutputOnChangeOnly() && this.record instanceof DirtyRecord)
         {
             // If no changes and doesn't match on say a filter selection skip it.
             ((DirtyRecord)this.record).touch();

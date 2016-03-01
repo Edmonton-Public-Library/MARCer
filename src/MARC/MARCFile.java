@@ -5,7 +5,6 @@
  */
 package MARC;
 
-import instructions.Instruction;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,7 +27,7 @@ public class MARCFile
     {
         private boolean debug;
         private boolean isStrict;
-        private final String file;
+        private String file;
         private boolean outputModifiedOnly;
         
         /**
@@ -46,7 +45,7 @@ public class MARCFile
          *
          * @param b true if strict checking is to be used and false otherwise.
          * False will cause minor errors to be reported but won't stop the show.
-         * @return Connection builder
+         * @return builder
          */
         public Builder setStrict(boolean b)
         {
@@ -103,37 +102,14 @@ public class MARCFile
         this.debug = builder.debug;
         this.marcSplitter.parseMARC();
     }
-
-    /** Sets the instructions used to modify or test the marc file.
-     * 
-     * @param instructionList List of instructions, either test or modify.
-     */
-    public void runInstructions(List<Instruction> instructionList) 
+    
+    /**
+    * Gets the records from the MARC file.
+    * @return marc records in as Iterable.
+    */
+    public Iterable<Record> getRecords() 
     {
-        for (Record r: this.marcSplitter.getRecords())
-        {
-            for (Instruction i: instructionList)
-            {
-                i.setRecord(r);
-                if (! i.run() && debug)
-                {
-                    System.out.printf("fail: '%s'\n", i.toString());
-                }
-            }
-        }
-        // pass 2 to finalize any instructions that run at the end.
-        for (Record r: this.marcSplitter.getRecords())
-        {
-            for (Instruction i: instructionList)
-            {
-                if (! i.setFinalize() && debug)
-                {
-                    System.out.printf("failed to finalize object: '%s'\n", i.toString());
-                }
-            }
-        }
-        System.out.printf("Records printed %6d\n", Instruction.getPrintedRecords());
-        System.out.printf("Records written %6d\n", Instruction.getWrittenRecords());
+        return this.marcSplitter.getRecords();
     }
     
     /**
@@ -235,7 +211,7 @@ public class MARCFile
          * Gets the records from the MARC file.
          * @return marc records in as Iterable.
          */
-        public Iterable<Record> getRecords() 
+        Iterable<Record> getRecords() 
         {
             return marcRecords;
         }

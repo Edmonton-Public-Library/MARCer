@@ -102,7 +102,7 @@ public class IfContains extends Instruction
                 result = true;
                 // there may be no changes to the record, but we want the record to
                 // be output if the user has selected so in the intructions.
-                if (Instruction.writeChangedRecordsOnly && this.record instanceof DirtyRecord)
+                if (Environment.isOutputOnChangeOnly() && this.record instanceof DirtyRecord)
                 {
                     ((DirtyRecord)this.record).touch();
                 }

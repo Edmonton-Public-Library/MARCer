@@ -17,6 +17,7 @@ package instructions;
 
 import MARC.DirtyRecord;
 import MARC.Record;
+import instructions.Environment;
 import instructions.Parser.SyntaxError;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -112,7 +113,7 @@ class WriteFile extends Instruction
             {
                 // there may be no changes to the record, but we want the record to
                 // be output if the user has selected so in the intructions.
-                if (Instruction.writeChangedRecordsOnly && r instanceof DirtyRecord)
+                if (Environment.isOutputOnChangeOnly() && r instanceof DirtyRecord)
                 {
                     // If no changes and doesn't match on say a filter selection skip it.
                     if (((DirtyRecord)r).isDirty() == false)
@@ -121,7 +122,7 @@ class WriteFile extends Instruction
                     }
                 }
                 r.write(out);
-                Instruction.writtenRecords++;
+                Environment.incrementWrittenRecords();
             }
             out.flush();
             out.close();
@@ -167,7 +168,7 @@ class WriteFile extends Instruction
             {
                 // there may be no changes to the record, but we want the record to
                 // be output if the user has selected so in the intructions.
-                if (Instruction.writeChangedRecordsOnly && r instanceof DirtyRecord)
+                if (Environment.isOutputOnChangeOnly() && r instanceof DirtyRecord)
                 {
                     // If no changes and doesn't match on say a filter selection skip it.
                     if (((DirtyRecord)r).isDirty() == false)
@@ -176,7 +177,7 @@ class WriteFile extends Instruction
                     }
                 }
                 writer.println(r.toString());
-                Instruction.writtenRecords++;
+                Environment.incrementWrittenRecords();
             }
             writer.flush();
             writer.close();

@@ -14,70 +14,10 @@ import MARC.Record;
 public abstract class Instruction 
 {
 
-    public static int getPrintedRecords()
-    {
-        return printedRecords;
-    }
-
-    public static int getWrittenRecords()
-    {
-        return writtenRecords;
-    }
     
     protected String tag;
     protected String verb;
-    protected static int printedRecords = 0;
-    protected static int writtenRecords = 0;
-    protected static boolean debug = false;
-    protected static boolean ignoreIndicators = false;
-    protected static boolean writeChangedRecordsOnly = false;
-    protected static boolean isStrict = false;
-    
-    /**
-     * Turns on debugging information.
-     * @param debug turns on debugging.
-     */
-    static void setDebug(boolean debug)
-    {
-        Instruction.debug = debug;
-    }
-    
-    /**
-     * Reports the current setting of the strict flag.
-     * @return the value of the strict flag.
-     */
-    public static boolean isStrict() 
-    {
-        return isStrict;
-    }
-    
-    /**
-     * Sets the strict-checking flag.
-     * @param strict true to be strict about error and false otherwise.
-     */
-    static void setStrict(boolean strict)
-    {
-        isStrict = strict;
-    }
-    
-    /**
-     * Sets the application to output only changed records, or records that test 
-     * successfully.
-     * @param b true to get just changed records and false otherwise.
-     */
-    static void setOutputOnChangeOnly(boolean b)
-    {
-        Instruction.writeChangedRecordsOnly = b;
-    }
-    
-    /** 
-     * Tests if the flag to output changed records only is on.
-     * @return true if user requests changes records only, and false otherwise.
-     */
-    public static boolean isOutputOnChangeOnly()
-    {
-        return writeChangedRecordsOnly;
-    }
+
     
     /**
      * Sets the Directory of the MARC record, which is the payload of the MARC

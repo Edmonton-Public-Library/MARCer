@@ -21,7 +21,9 @@
 package marcer;
 
 import MARC.MARCFile;
+import instructions.Environment;
 import instructions.Instruction;
+import instructions.Interpreter;
 import instructions.Parser;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,7 +51,7 @@ public class MARCer
         System.out.println("Running...");
         // parse the command line.
         MARCFile marcFile = null;
-        List<Instruction> instructionList = new ArrayList<>();
+        Interpreter interpreter = null;
         // First get the valid options
         Options options = new Options();
         // add t option c to config directory true=arg required.
@@ -73,37 +75,26 @@ public class MARCer
             
             if (cmd.hasOption("d")) // debug.
             {
-                DEBUG = true;
+                Environment.setDebug(true);
             }
             // Handle the user instructions.
             if (cmd.hasOption("i"))
             {
-                // read the [i]nstructions from a file and create modification instructions line-by-line.
-                String instructionFile = cmd.getOptionValue("i");
-                Parser parser = new Parser(DEBUG);
-                if (! parser.parse(instructionFile, instructionList))
-                {
-                    System.err.println(
-                            String.format("** error parsing instructions in file '%s'.",
-                                    instructionFile));
-                    System.exit(4);
-                }
+                interpreter = new Interpreter(cmd.getOptionValue("i"));
+            }
+            else
+            {
+                String msg = new Date() + "No instructions specified.";
+                Logger.getLogger(MARCer.class.getName()).log(Level.SEVERE, msg);
+                System.exit(2);
             }
             // Now handle the marc file reading to ensure that variables in instructions
             // are honoured during reading of the MARC file.
             if (cmd.hasOption("f"))
             {
-                String marcFilePath = cmd.getOptionValue("f");
-                marcFile = new MARCFile.Builder(marcFilePath)
-                    .debug(DEBUG)
-                    .setOutputOnModifyOnly(Instruction.isOutputOnChangeOnly())
-                    .setStrict(Instruction.isStrict()).build();
+                Environment.setMarcFile(cmd.getOptionValue("f"));
             }
-            else
-            {
-                System.err.println("Please specify a marc file on the command line.");
-                System.exit(3);
-            }
+            // Else should be specified in the instruction file.
         } 
         catch (ParseException ex)
         {
@@ -111,11 +102,6 @@ public class MARCer
             Logger.getLogger(MARCer.class.getName()).log(Level.SEVERE, msg, ex);
             System.exit(2);
         }
-        // Don't run the instructions if there aren't any.
-        if (instructionList.size() > 0)
-        {
-            marcFile.runInstructions(instructionList);
-        }
-        System.exit(0);
+        interpreter.runInstructions();
     }
 }

@@ -43,13 +43,16 @@ class Variable extends Instruction
         switch (variableName)
         {
             case "debug":
-                Instruction.setDebug(Boolean.parseBoolean(variableValue));
+                Environment.setDebug(Boolean.parseBoolean(variableValue));
                 break;
             case "output_modified_only":
-                Instruction.setOutputOnChangeOnly(Boolean.parseBoolean(variableValue));
+                Environment.setOutputOnChangeOnly(Boolean.parseBoolean(variableValue));
                 break;
             case "strict":
-                Instruction.setStrict(Boolean.parseBoolean(variableValue));
+                Environment.setStrict(Boolean.parseBoolean(variableValue));
+                break;
+            case "marc_file":
+                Environment.setMarcFile(variableValue);
                 break;
             default:
                 this.symbolTable.put(variableName, variableValue);

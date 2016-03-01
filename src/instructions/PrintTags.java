@@ -90,7 +90,7 @@ public class PrintTags extends Instruction
                 break;
         }
         System.out.printf("%s\n", output);
-        Instruction.printedRecords++;
+        Environment.incrementPrintedRecords();
         return true;
     }
 }
