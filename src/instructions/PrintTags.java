@@ -53,6 +53,7 @@ public class PrintTags extends Instruction
                 this.printType = PrintType.record;
                 break;
             case "leader":
+            case "LDR":
                 this.printType = PrintType.leader;
                 break;
             default:
@@ -77,7 +78,7 @@ public class PrintTags extends Instruction
                 output = this.record.toString();
                 break;
             case leader:
-                output = this.record.getLeader().toString();
+                output = this.record.getLeader().getLeaderString();
                 break;
             default:
                 StringBuilder sb = new StringBuilder();

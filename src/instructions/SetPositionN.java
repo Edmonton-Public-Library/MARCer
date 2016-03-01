@@ -6,8 +6,6 @@
 package instructions;
 
 import MARC.Record;
-import MARC.Tag;
-import MARC.Utility;
 import instructions.Parser.SyntaxError;
 import java.util.List;
 

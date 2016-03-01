@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -57,6 +58,7 @@ public class Parser
                 String[] tokens = instructionLine.split("\\s+");
                 List<String> usefulTokens = new ArrayList<>();
                 StringBuffer sbToken = new StringBuffer();
+//                Parser.readQuotedTokens(usefulTokens, tokens);
                 for (String token : tokens) 
                 {
                     // Ignore everything after a comment char or REM statement for those that like syntax highlighting on cfg files.
@@ -117,6 +119,48 @@ public class Parser
     }
     
     /**
+     * Reads a string and parses out tokens including upto one quoted string.
+     * @param command String of command.
+     * @return List of tokens, one of which could be quoted.
+     */
+    public static List<String> readQuotedTokens(String command)
+    {
+        List<String> quotedTokens = new ArrayList<>();
+        if (command.isEmpty()) return quotedTokens;
+        int startPos = command.indexOf('"');
+        if (startPos >= 0) // there is a quote.
+        {
+            String[] postQuote = command.split("\"");
+            if (! postQuote[0].isEmpty())
+            {
+                quotedTokens.addAll(Arrays.asList(command.substring(0, startPos).split("\\s+")));
+            }
+            quotedTokens.add("\"" + postQuote[1] + "\""); // add the quoted string in the middle.
+            if (postQuote.length > 2)
+            {
+                quotedTokens.addAll(Arrays.asList(postQuote[2].trim().split("\\s+")));
+            }
+        }
+        else // no quotes
+        {
+            for (String s: command.split("\\s+"))
+            {
+                quotedTokens.add(s);
+            }
+        }
+        return quotedTokens;
+    }
+    
+    Instruction getInstruction(String[] tokens) 
+            throws IndexOutOfBoundsException, 
+            SyntaxError
+    {
+        List<String> tokenList = new ArrayList<>();
+        tokenList.addAll(Arrays.asList(tokens));
+        return this.getInstruction(tokenList);
+    }
+    
+    /**
      * Manufactures instruction object based on the verb of the sentence.
      * @param tokens tokens read from the instruction file.
      * @return Instruction.
@@ -136,14 +180,7 @@ public class Parser
                 instruction = new SetPositionN(tokens);
                 break;
             case "if":
-                switch (tokens.get(2))
-                {
-                    case "matches":
-                        instruction = new IfMatchThen(tokens);
-                        break;
-                    default:
-                        instruction = new IfThen(tokens);
-                }
+                instruction = new If(tokens);
                 break;
             case "print":
                 instruction = new PrintTags(tokens);
@@ -156,7 +193,7 @@ public class Parser
                 break;
             case "pre-pend":
             case "append":
-                instruction = new AppendTagN(tokens);
+                instruction = new AppendTag(tokens);
                 break;
             case "add":
                 instruction = new AddTag(tokens);
@@ -170,6 +207,9 @@ public class Parser
             case "filter":
                 instruction = new LanguageFilter(tokens);
                 break;
+            case "test":
+                instruction = new Tester(tokens);
+                break; 
             default:
                 throw new UnsupportedOperationException(String.format("operation '%s' not supported.", verb));
         }

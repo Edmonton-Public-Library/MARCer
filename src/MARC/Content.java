@@ -218,10 +218,10 @@ public class Content
         }
         if (iTag < START_INDICATOR)
         {
-            return this.content.replace(' ', '\\');
+            return this.content.replace((char)0x20, '\\');
         }
         StringBuilder sb = new StringBuilder();
-        if (this.content.charAt(0) == ' ') 
+        if (this.content.charAt(0) == 0x20) 
         {
             sb.append('\\');
         }

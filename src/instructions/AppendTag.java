@@ -27,14 +27,14 @@ import java.util.ArrayList;
  * Syntax: [tag] [append|pre-pend] [some string]
  * @author anisbet
  */
-public class AppendTagN extends Instruction 
+public class AppendTag extends Instruction 
 {
 
     private Record record;
     private String value;
     private boolean append;
     
-    public AppendTagN(List<String> tokens) throws SyntaxError
+    public AppendTag(List<String> tokens) throws SyntaxError
     {
 
         this.tag      = tokens.remove(0);

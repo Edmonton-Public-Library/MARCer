@@ -27,49 +27,64 @@ import java.util.List;
  * TODO implement in Parser, test.
  * @author anisbet
  */
-public class IfMatchThen extends Instruction
+public class IfContains extends Instruction
 {
-
-    private final List<Instruction> trueInstructions;
-    private final String leftSide;
     private final String regex;
     private Record record;
+    private final List<Instruction> trueInstructions;
+    private final List<Instruction> falseInstructions;
+    
     /**
-     * Syntax: <tag> if match <regex> then <other command>
+     * Syntax: [tag>] if content == [regex] then [other commands]; else [other commands];
      * @param tokens tokens from the command file.
      * @throws IndexOutOfBoundsException
      * @throws instructions.Parser.SyntaxError 
      */
-    public IfMatchThen(List<String> tokens) throws IndexOutOfBoundsException, Parser.SyntaxError
+    public IfContains(List<String> tokens) 
+            throws IndexOutOfBoundsException, 
+            Parser.SyntaxError
     {
         this.tag = tokens.remove(0);
-        this.verb= tokens.remove(0);
-        switch (this.verb)
-        {
-            case "if":
-                break;
-            default:
-                throw new Parser.SyntaxError(String.format("** error, unknown statement '%s'.\n", this.verb));
-        }
+        this.verb = tokens.remove(0);
         // Create new list for finished instructions.
         this.trueInstructions = new ArrayList<>();
-        this.leftSide = tokens.remove(0);
+        this.falseInstructions= new ArrayList<>();
+        tokens.remove(0); // This is just the keyword 'content' which we test for in the super class.
+        tokens.remove(0); // This is just the keyword '==' which we test for in the super class.
         // This is the regex
-        this.regex  = tokens.remove(0);
+        this.regex = tokens.remove(0);
         // Next token must be 'then'. this signals the collection of the rest of the line as an instruction.
-        if (tokens.remove(0).compareToIgnoreCase("then") != 0) 
+        tokens.remove(0);
+        StringBuilder sb = new StringBuilder();
+        tokens.stream().forEach((s) ->
         {
-            throw new Parser.SyntaxError(String.format("** error, missing 'then' clause.\n"));
-        }
-        Parser parser   = new Parser(true);
-        // create new list for partial raw instrctions, that is, instruction that haven't been parsed yet.
-        List<String> thisInstruction = new ArrayList<>();
-        tokens.stream().forEach((iString) -> 
-        {
-            thisInstruction.add(iString);
+            sb.append(s).append(" ");
         });
-        Instruction nextInstruction = parser.getInstruction(thisInstruction);
-        this.trueInstructions.add(nextInstruction);
+        String remainingTokens = sb.toString().trim();
+        // now the string is just 'statement; statement else statement; statement'. 
+        String[] thenElse = remainingTokens.split("else");
+        if (thenElse.length < 1) // nothing after 'then'
+        {
+            throw new Parser.SyntaxError(String.format("** error, missing then clause.\n"));
+        }
+        Parser parser = new Parser(true);
+        // Get the 'then' clause statements.
+        for (String s: thenElse[0].split(";"))
+        {
+            List<String> command = Parser.readQuotedTokens(s.trim());
+            Instruction instruction = parser.getInstruction(command);
+            this.trueInstructions.add(instruction);
+        }
+        // if there is an 'else' clause get those instructions in a similar way.
+        if (thenElse.length > 1)
+        {
+            for (String s: thenElse[1].split(";"))
+            {
+                List<String> command = Parser.readQuotedTokens(s.trim());
+                Instruction instruction = parser.getInstruction(command);
+                this.falseInstructions.add(instruction);
+            }
+        }
     }
     
     @Override
@@ -106,7 +121,7 @@ public class IfMatchThen extends Instruction
     }
 
     @Override
-    public void setRecord(Record record) 
+    public void setRecord(Record record)
     {
         this.record = record;
     }

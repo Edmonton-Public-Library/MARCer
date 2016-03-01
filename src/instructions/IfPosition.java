@@ -20,74 +20,83 @@ import MARC.DirectoryEntry;
 import MARC.DirtyRecord;
 import MARC.Leader;
 import MARC.Record;
-import instructions.Parser.SyntaxError;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * If then test of a field from a MARC record.
  * @author Andrew Nisbet
  */
-public class IfThen extends Instruction
+public class IfPosition extends Instruction
 {
+    private int    leftSide;
+    private String rightSide;
+    private Record record;
+    private final List<Instruction> trueInstructions;
+    private final List<Instruction> falseInstructions;
 
-    protected Record record;
-    protected List<Instruction> trueInstructions;
-    protected int    leftSide;
-    protected String operator;
-    protected String rightSide;
     /**
      * Instruction looks like '008 if 1 == 5 then 035 print'
      * @param tokens tokens read from the instruction file.
      * @throws instructions.Parser.SyntaxError if the instruction is formulated
      * incorrectly.
      */
-    public IfThen(List<String> tokens) throws
+    public IfPosition(List<String> tokens) throws
             IndexOutOfBoundsException,
             Parser.SyntaxError
     {
+        
+        // we don't have to check any of these because that was done in the super class.
         this.tag = tokens.remove(0);
         this.verb= tokens.remove(0);
-        switch (this.verb)
-        {
-            case "if":
-                break;
-            default:
-                throw new Parser.SyntaxError(String.format("** error, unknown statement '%s'.\n", this.verb));
-        }
         // Create new list for finished instructions.
         this.trueInstructions = new ArrayList<>();
-        this.leftSide = Parser.isNumber(tokens.remove(0));
-        this.operator = tokens.remove(0);
-        switch (this.operator)
+        this.falseInstructions= new ArrayList<>();
+        try
         {
-            case "==":
-                break;
-            default:
-                throw new SyntaxError(String.format("** error, unsupported operator '%s'.\n",this.operator));
+            this.leftSide = Parser.isNumber(tokens.remove(0));
         }
+        catch (Parser.SyntaxError ex)
+        {
+            Logger.getLogger(IfPosition.class.getName()).log(Level.SEVERE, "** error value couldn't be converted to expected integer.", ex);
+        }
+        tokens.remove(0); // remove the comparison operator, it was tested in the super class 'If'.
         // Character of any type
         this.rightSide  = tokens.remove(0);
         // Next token must be 'then'. this signals the collection of the rest of the line as an instruction.
-        if (tokens.remove(0).compareToIgnoreCase("then") != 0) 
+        tokens.remove(0);
+        StringBuilder sb = new StringBuilder();
+        tokens.stream().forEach((s) ->
         {
-            throw new SyntaxError(String.format("** error, missing 'then' clause.\n"));
-        }
-        Parser parser   = new Parser(true);
-        // create new list for partial raw instrctions, that is, instruction that haven't been parsed yet.
-        List<String> thisInstruction = new ArrayList<>();
-        for (String iString: tokens)
+            sb.append(s).append(" ");
+        });
+        String remainingTokens = sb.toString().trim();
+        // now the string is just 'statement; statement else statement; statement'. 
+        String[] thenElse = remainingTokens.split("else");
+        if (thenElse.length < 1) // nothing after 'then'
         {
-            thisInstruction.add(iString);
+            throw new Parser.SyntaxError(String.format("** error, missing then clause.\n"));
         }
-        Instruction nextInstruction = parser.getInstruction(thisInstruction);
-        this.trueInstructions.add(nextInstruction);
-    }
-
-    @Override
-    public void setRecord(Record record) 
-    {
-        this.record = record;
+        Parser parser = new Parser(true);
+        // Get the 'then' clause statements.
+        for (String s: thenElse[0].split(";"))
+        {
+            List<String> command = Parser.readQuotedTokens(s.trim());
+            Instruction instruction = parser.getInstruction(command);
+            this.trueInstructions.add(instruction);
+        }
+        // if there is an 'else' clause get those instructions in a similar way.
+        if (thenElse.length > 1)
+        {
+            for (String s: thenElse[1].split(";"))
+            {
+                List<String> command = Parser.readQuotedTokens(s.trim());
+                Instruction instruction = parser.getInstruction(command);
+                this.falseInstructions.add(instruction);
+            }
+        }
     }
 
     @Override
@@ -96,8 +105,8 @@ public class IfThen extends Instruction
         boolean result = false;
         if (this.tag.equalsIgnoreCase(Leader.TAG))
         {
-            Leader l = this.record.getLeader();
-            if (this.rightSide.charAt(0) == l.getLeaderString().charAt(this.leftSide))
+            Leader leader = this.record.getLeader();
+            if (this.rightSide.charAt(0) == leader.getLeaderString().charAt(this.leftSide))
             {
                 result = true;
                 // there may be no changes to the record, but we want the record to
@@ -137,6 +146,20 @@ public class IfThen extends Instruction
                 result = instruction.run();
             }
         }
+        else
+        {
+            for (Instruction instruction: this.falseInstructions)
+            {
+                instruction.setRecord(this.record);
+                result = instruction.run();
+            }
+        }
         return result;
+    }
+
+    @Override
+    public void setRecord(Record record)
+    {
+        this.record = record;
     }
 }
