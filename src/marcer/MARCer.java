@@ -22,12 +22,8 @@ package marcer;
 
 import MARC.MARCFile;
 import instructions.Environment;
-import instructions.Instruction;
 import instructions.Interpreter;
-import instructions.Parser;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.BasicParser;
@@ -44,7 +40,7 @@ import org.apache.commons.cli.ParseException;
 public class MARCer 
 {
     private static boolean DEBUG = false;
-    private static final String VERSION = "0.01";
+    private static final String VERSION = "0.02.00";
 
     public static void main(String[] args)
     {

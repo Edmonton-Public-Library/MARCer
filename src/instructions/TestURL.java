@@ -50,7 +50,7 @@ public class TestURL extends Instruction
         List<DirectoryEntry> urls = this.record.getTags(this.tag);
         for (DirectoryEntry de: urls)
         {
-            String url = extractURL(de.getContent());
+            String url = de.getContent().extractSubfield('u');
             URLTester urlTester = new URLTester(url);
             // This is a little backwards, URL are expected to be valid if they
             // don't find the predicate in the page's content.
@@ -66,20 +66,5 @@ public class TestURL extends Instruction
         }
         System.err.printf("** URL test failed on TCN '%s'\n", this.record.getTCN());
         return false;
-    }
-    
-    private String extractURL(Content content)
-    {
-        String retString = content.toString();
-        String[] subFields = retString.split("\\$");
-        for (String subField: subFields)
-        {
-            // look through all the strings for a string that starts with 'u'.
-            if (subField.startsWith("u"))
-            {
-                return subField.substring(1);
-            }
-        }
-        return "";
     }
 }

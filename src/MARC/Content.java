@@ -16,6 +16,7 @@
 package MARC;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -138,7 +139,15 @@ public class Content
      */
     public int getSize()
     {
-        return this.content.length();
+        try 
+        {
+            return this.content.getBytes(StandardCharsets.UTF_8.name()).length;
+        } 
+        catch (UnsupportedEncodingException ex) 
+        {
+            Logger.getLogger(Content.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
     }
     
     /**
@@ -158,7 +167,7 @@ public class Content
      */
     public byte[] getBytes()
     {
-        byte[] bytes = new byte[this.content.length()];
+        byte[] bytes = new byte[this.getSize()];
         // remove any subfield delimiter.
         String newString = this.content.replace(SUB_FIELD_CHAR, (char)Content.US);
         try 
@@ -280,5 +289,56 @@ public class Content
             if (sub.contains(match)) return true;
         }
         return false;
+    }
+    
+    /**
+     * Replaces a subfield.
+     * @param newSubfield value for the new sub field.
+     * @param subFieldValue the name of the subfield.
+     * @return true if the subfield was found and changed and false otherwise.
+     */
+    public boolean replaceSubField(String newSubfield, char subFieldValue)
+    {
+        boolean result = false;
+        String[] subFields = content.split("\\$");
+        StringBuilder sb   = new StringBuilder();
+        sb.append(subFields[0]); // add the indicators.
+        for (int i = 1; i < subFields.length; i++)
+        {
+            sb.append("$");
+            // look through all the strings for a string that starts with 'u'.
+            if (subFields[i].charAt(0) == subFieldValue)
+            {
+                subFields[i] = subFieldValue + newSubfield;
+                result = true;
+            }
+            sb.append(subFields[i]);
+        }
+        // subfield found let's replace it.
+        if (result)
+        {
+            content = sb.toString();
+        }
+        return result;
+    }
+    
+    /**
+     * Returns the contents of a subfield.
+     * @param subfield letter of the subfield
+     * @return the String contents of the subfield of empty string if the
+     * content doesn't contain the given subfield.
+     */
+    public String extractSubfield(char subfield)
+    {
+        String[] subFields = content.split("\\$");
+        for (String subField: subFields)
+        {
+            // look through all the strings for a string that starts with 'u'.
+            if (subField.charAt(0) == subfield)
+            {
+                return subField.substring(1);
+            }
+        }
+        return "";
     }
 }

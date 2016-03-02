@@ -63,7 +63,6 @@ public class Parser
                 String[] tokens = instructionLine.split("\\s+");
                 List<String> usefulTokens = new ArrayList<>();
                 StringBuffer sbToken = new StringBuffer();
-//                Parser.readQuotedTokens(usefulTokens, tokens);
                 for (String token : tokens) 
                 {
                     // Ignore everything after a comment char or REM statement for those that like syntax highlighting on cfg files.
@@ -214,6 +213,9 @@ public class Parser
                 break;
             case "test":
                 instruction = new Tester(tokens);
+                break;
+            case "url_decode":
+                instruction = new URLDecode(tokens);
                 break;
             default:
                 throw new UnsupportedOperationException(String.format("operation '%s' not supported.", verb));

@@ -5,6 +5,7 @@
  */
 package instructions;
 
+import MARC.Content;
 import MARC.Record;
 
 /**
@@ -14,11 +15,9 @@ import MARC.Record;
 public abstract class Instruction 
 {
 
-    
     protected String tag;
     protected String verb;
 
-    
     /**
      * Sets the Directory of the MARC record, which is the payload of the MARC
      * file.
