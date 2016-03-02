@@ -5,7 +5,6 @@
  */
 package instructions;
 
-import MARC.Content;
 import MARC.Record;
 
 /**

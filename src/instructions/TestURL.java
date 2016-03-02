@@ -15,7 +15,6 @@
  */
 package instructions;
 
-import MARC.Content;
 import MARC.DirectoryEntry;
 import MARC.DirtyRecord;
 import MARC.Record;
